@@ -1,0 +1,68 @@
+version: v0.4
+project:
+  name: A finite counterexample for strict consecutive totient patterns
+  description: >-
+    Formalizes the finite counterexample at cutoff 826 from Proposition 1.2 of
+    Przemek Chojecki's Consecutive Totient Patterns. With ranks assigned to
+    positions and an inclusive cutoff, every strict length-three permutation
+    occurs, no increasing length-four block occurs, and a decreasing length-four
+    block does occur. Hence the largest universal length is three and decreasing
+    is not always absent at the first non-universal length. This is a partial
+    negative result for a specified reading of Erdos Problem 415; no novelty,
+    asymptotic result or natural weak-order frequency result is claimed.
+  authors: [Alexander]
+  responsible_maintainers: [Alexander]
+  license: Apache-2.0
+classification:
+  arxiv: [math.NT]
+  msc2020: [11A25]
+automation:
+  methods:
+    - method: agent
+      models: [GPT-6]
+      framework: OpenAI Codex
+      tool_setup: OpenAI Codex, GPT-6
+      notes: >-
+        Codex agents audited the source, constructed the Lean finite certificate
+        and general bound, and prepared submission packaging. A separate agent
+        reviewed statement fidelity. Human maintainer supplied the original
+        definitions and directed the submission. See AUDIT.md.
+review:
+  status: agent-reviewed
+  reviewers: [Independent Codex audit agent]
+  notes: Source and proof audit by an AI agent; no human expert review is claimed.
+sources:
+  - title: Consecutive Totient Patterns
+    type: paper
+    authors: [Przemek Chojecki]
+    url: https://www.ulam.ai/research/erdos415-sol.pdf
+    relationship: formalizes
+    note: Proposition 1.2, Section 4 and Appendix A; manuscript dated 2026-07-13.
+  - title: Erdos Problem 415
+    type: web discussion
+    url: https://www.erdosproblems.com/415
+    relationship: background
+    note: Original questions; strict and weak ordering readings require distinction.
+status:
+  scope: Finite counterexample under the specified strict-pattern cutoff interpretation.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: [propext, Classical.choice, Quot.sound]
+  main_results:
+    - declaration: Erdos415.finite_counterexample826
+      file: Solution.lean
+      comparator_config: comparator.json
+    - declaration: Erdos415.not_decreasingAlwaysMissing
+      file: Solution.lean
+      comparator_config: comparator.json
+  notes: Only the stated finite counterexample and its consequence are submitted.
+scope:
+  submitted_declarations:
+    - Erdos415.finite_counterexample826
+    - Erdos415.not_decreasingAlwaysMissing
+  known_gaps:
+    - Asymptotic constant questions remain unproved definitions.
+    - Natural weak-order frequency questions remain unproved definitions.
+    - No claim is made that the source uniquely specifies this cutoff interpretation.
+  permitted_axioms: [propext, Quot.sound, Classical.choice]
+related_formalizations: []

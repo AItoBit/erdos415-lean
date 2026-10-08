@@ -1,48 +1,44 @@
 # Submission audit
 
-Checked on 2026-10-08. Outcome: **INCOMPLETE** as a verified-result submission. No full or partial theorem has been proved in the supplied Lean file.
+Audit date: 2026-10-08. Target: the finite counterexample in Chojecki, Consecutive Totient Patterns (2026-07-13), Proposition 1.2, Section 4 and Appendix A: https://www.ulam.ai/research/erdos415-sol.pdf.
 
-## Statement correspondence
+## Frozen statement
 
-| Mathematical clause | Lean representation | Audit finding |
+| Source clause | Lean representation | Interpretation |
 |---|---|---|
-| Consecutive totients beginning at a positive integer | `block m k i = Nat.totient (m + i.val + 1)` | Starts at `m+1`, with `m : ℕ`; covers positive starting integers. |
-| A prescribed strict rank pattern | `Realizes m k π` | Ranks attach to positions. Pairwise strict comparisons exclude ties. |
-| Every strict permutation appears below a cutoff | `AllStrictPatterns n k` | The starting point depends on the permutation; `m+k ≤ n` is required. |
-| Largest universally realized length | `F n` | Restricts to `k ≤ n`; uses the empty block as the zero-length convention. |
-| Constant-limit questions | `LiteralConstantQuestion`, `PositiveConstantQuestion` | Distinguished deliberately: allowing zero is weaker than requiring a positive constant. |
-| First missing pattern is decreasing | `DecreasingAlwaysMissing` | A qualified cutoff interpretation; does not assert uniqueness. |
-| Natural ordering and its frequency | `SameWeakOrder`, `NaturalMostFrequentInDensity` | Weak comparisons encode ties. Density existence is an additional explicit interpretation. |
-| Finite example at 826 | `FiniteCounterexample826` | Defines a conjunction; supplies no proof. |
+| Consecutive positive integers | `block m k i` | First integer `m+1`, last integer `m+k`. |
+| Strict rank pattern | `Realizes m k π` | Ranks attach to positions; ties excluded. |
+| Every permutation below cutoff | `AllStrictPatterns n k` | Witness depends on permutation; endpoint at most `n`. |
+| Largest universal length | `F n` | Length at most `n`; empty length included. |
+| Decreasing first missing pattern | `DecreasingAlwaysMissing` | Necessary absence condition at length `F n+1`; no uniqueness claim. |
+| Finite counterexample | `FiniteCounterexample826` | `F 826=3`, decreasing length four present, increasing length four absent. |
 
-The independent agent found no obvious discrepancy in the strict-pattern definitions. Ambiguous readings remain labeled and are not frozen as uniquely faithful resolutions of the source. At zero, empty universality holds and `F 0` is zero. Real logarithms and division are totalized at small inputs, while the constant questions concern limits at infinity.
+An independent agent verified source correspondence. All eight shared definitions in Challenge have the same bodies as Erdos415. Source start 823 corresponds to `m=822`. The target was frozen before proof construction and was not weakened. The empty convention gives `F 0=0`.
 
-## Dependencies
+## Proof dependencies
 
-`block → Realizes → AllStrictPatterns → F`.
+Mathlib prime/product totient lemmas → `phi_0` … `phi_826` → `values_eq` → `values_correct`.
 
-`block → HasDecreasing, HasIncreasing`.
+`values_correct` → six witnesses → `AllStrictPatterns826_3`.
 
-`F, iterLog → LiteralConstantQuestion, PositiveConstantQuestion`.
+`values_correct` + exhaustive table check over `Fin 823` → `noIncreasing826`.
 
-`F, HasDecreasing → DecreasingAlwaysMissing`.
+`phi_823` … `phi_826` → `decreasing826`.
 
-`block, SameWeakOrder → weakCount → WeakDensity → NaturalMostFrequentInDensity`.
+Identity-pattern restriction → `F_eq_three_of_patterns` → `F_826_eq_three`.
 
-`F, HasDecreasing, HasIncreasing → FiniteCounterexample826`.
+`F_826_eq_three`, `decreasing826`, `noIncreasing826` → `finite_counterexample826` → `not_decreasingAlwaysMissing`.
 
-All these nodes are definitions. None is a proved research result.
+The bound uses the identity permutation restricted to its first four positions. Exhaustive absence covers `m=0,…,822`, precisely all permitted starts. All 827 certified totient values agree with a separate integer sieve. The six length-three witnesses have `m=104,5,4,15,12,312`.
 
-## Finite evidence
+Checks use proved Mathlib arithmetic facts and `decide +kernel`. Implementation modules have no `native_decide`, `sorry`, `admit`, custom axiom, `unsafe`, `implemented_by` or `extern`. Challenge alone has two deliberate holes; Solution does not import it.
 
-A separate agent ran an exact integer totient sieve through 826. It found all six strict length-three patterns and fifteen of the twenty-four length-four patterns. The increasing length-four pattern was absent. At the decreasing witness `m=822`, the values are `(822, 408, 400, 348)`. The reproducible script is `compute826.py`; the packaging agent also ran it independently with the same assertions.
+## Verification status
 
-Downward heredity of universality explains the mathematical inference `F(826)=3`: extend any smaller rank permutation by appending larger ranks, then restrict a realizing block to its initial positions. This argument and the finite enumeration are not proved in Lean here. No finite experiment establishes an asymptotic question.
+Outcome: **PARTIAL RESULT PROVED**. `lake --wfail build Erdos415 Bounds Certificate FiniteProof Solution Challenge` passed with no warnings (2019 jobs). Both submitted theorems have exactly the standard axiom dependencies `[propext, Classical.choice, Quot.sound]`, as reported by `#print axioms`; neither depends on `sorryAx`. The independent audit agent separately ran the final axiom check and approved the optimized certificate, exact targets and source correspondence. The upstream formalization.yaml v0.4 schema check passes. Full Palomar mechanical preflight and intake are pending.
 
-## Verification and limitations
+## Production and limitations
 
-`lake --wfail build Erdos415` passed with exit status 0 and no warnings on Lean 4.35.0-rc3, Mathlib commit `0db6cb99b412983de54b59ecc1b0b2747542cda3`. The initial supplied documentation described an uncompiled draft. The build exposed one source error, fixed by marking `iterLog` as `noncomputable`, because it uses `Real.log`. Packaging also added the module header and public visibility and narrowed imports. Proposition bodies and quantifiers were preserved.
+Alexander supplied the definitions and is the responsible author and maintainer. Codex agents constructed proofs and packaging and performed a separate source/proof audit. No human expert review or source-author endorsement is claimed. This formalizes an existing partial result; no novelty or full resolution of 415 is claimed.
 
-The supplied file contains no theorem declaration, `sorry`, `admit`, custom axiom, `unsafe`, or `native_decide`. Comments mentioning unproved status are documentation. There is no theorem axiom audit to report because the file proves no theorem.
-
-The sources include manuscript claims and interpretations, not an independently verified full proof. The overall mathematical status is not inferred from this file or from failure to prove anything. Palomar eligibility and author/maintainer identity have not been established for a proved-result submission.
+Original proposition bodies and quantifiers were preserved. Packaging added module/public visibility, narrowed imports, and made `iterLog` noncomputable because it uses `Real.log`. Other questions remain unproved proposition definitions. Weak-order density and positive-constant conventions are explicit interpretations. The manuscript's asymptotic argument and the unavailable supplied discussion PDF were not verified. The Python count of fifteen length-four patterns is supplementary evidence, not a separately proved Lean theorem.

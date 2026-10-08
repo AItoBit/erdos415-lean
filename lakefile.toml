@@ -1,5 +1,5 @@
 name = "erdos415"
-defaultTargets = ["Erdos415"]
+defaultTargets = ["Erdos415", "Solution"]
 
 [leanOptions]
 autoImplicit = false
@@ -12,3 +12,18 @@ rev = "0db6cb99b412983de54b59ecc1b0b2747542cda3"
 
 [[lean_lib]]
 name = "Erdos415"
+
+[[lean_lib]]
+name = "Bounds"
+
+[[lean_lib]]
+name = "Certificate"
+
+[[lean_lib]]
+name = "FiniteProof"
+
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"

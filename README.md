@@ -1,37 +1,43 @@
-# Erdős Problem 415: statement draft
+# A finite counterexample for Erdős Problem 415
 
-This project records proposed Lean definitions for the questions about ordering patterns of consecutive Euler totients in [Erdős Problem 415](https://www.erdosproblems.com/415).
+This project formalizes the finite counterexample at cutoff 826 in Przemek Chojecki's [Consecutive Totient Patterns](https://www.ulam.ai/research/erdos415-sol.pdf), Proposition 1.2, Section 4 and Appendix A (2026-07-13).
 
-**It contains no proved theorem and is not a solution of Problem 415.** In particular, `FiniteCounterexample826` is a proposition definition, not a certificate or proof. There is currently no Challenge/Solution pair for Palomar.
+Every strict rank pattern of length three occurs in consecutive totients ending at or before 826. An increasing block of length four is absent, but the decreasing block starting at 823 has totients `(822, 408, 400, 348)`. The maximum universal length is therefore three. Decreasing is not always absent at the first non-universal length.
 
-## Scope
+This is an existing partial negative result under a specified reading of [Problem 415](https://www.erdosproblems.com/415). No novelty, complete solution, asymptotic result or natural weak-order frequency result is claimed.
 
-`Realizes` encodes strict ordering by assigning a rank to each position. `AllStrictPatterns` allows a different starting point for each permutation, and `F` maximizes over lengths bounded by the cutoff. Separate definitions record the literal constant question, its positive-constant interpretation, and a qualified first-missing-decreasing-pattern question.
+## Compared statements
 
-The natural-order question uses weak ordering. `NaturalMostFrequentInDensity` chooses an asymptotic-density interpretation and additionally requires every compared density to exist. This is an explicit interpretation, not an assertion that the source uniquely specifies it.
+`Challenge.lean` imports only Mathlib and has two deliberate proof holes:
 
-## Sources and provenance
+- `Erdos415.finite_counterexample826`: `F 826 = 3`, a decreasing length-four block occurs, and no increasing length-four block occurs.
+- `Erdos415.not_decreasingAlwaysMissing`: the proposed necessary cutoff condition for decreasing to be the first missing pattern fails.
 
-- [Problem 415](https://www.erdosproblems.com/415) and its [discussion](https://www.erdosproblems.com/forum/thread/415).
-- Przemek Chojecki, [Consecutive Totient Patterns](https://www.ulam.ai/research/erdos415-sol.pdf), dated 2026-07-13 in the supplied draft.
+`Solution.lean` supplies the proofs and does not import Challenge. `comparator.json` selects these declarations. The permitted axioms are `propext`, `Quot.sound` and `Classical.choice`; no additional axiom is permitted.
 
-The Lean definitions were supplied by the repository maintainer in `Erdos415.lean`. Their original documentation states that no proof from the manuscript or an existing Lean file was copied. This publication adds project packaging and an audit; it does not establish that provenance beyond the supplied account. Codex assisted with packaging and compilation, and a separate Codex agent audited the statements and reproduced the finite computation.
+The cutoff is inclusive. A block starting at `m+1` ends at `m+k`, with `m+k ≤ n`. Ranks attach to positions, ties are excluded, and different permutations may use different blocks. Length zero is included in `F`. The missing-decreasing condition asks for absence, not uniqueness.
 
-The original reference to a supplied discussion PDF could not be checked because that PDF was not provided with this submission request. The cited manuscript's asymptotic argument has not been independently verified in this project. No novelty or complete resolution is claimed.
+## Proof architecture
+
+`Certificate.lean` proves totient values from zero through 826 using Mathlib's prime and product recurrence lemmas. A proved list identity connects these facts to an indexed table. `FiniteProof.lean` checks six length-three witnesses, the decreasing witness, and absence of an increasing length-four block at every possible start, using `decide +kernel`. `Bounds.lean` restricts the identity pattern at any universal length at least four, so the absent increasing block bounds every universal length by three.
+
+The supplementary Python sieve `compute826.py` reproduces the example. Its count of fifteen strict length-four patterns is numerical evidence; Lean does not separately prove that count.
+
+## Scope and provenance
+
+Alexander supplied the original definitions and directs this project as responsible maintainer. Codex agents constructed the finite proof and general bound and prepared the submission. A separate Codex agent audited source correspondence and finite values. No human expert review or source-author endorsement is claimed. No earlier Lean proof was copied or used as a project dependency; no comprehensive prior-formalization search is claimed.
+
+`Erdos415.lean` retains additional unproved proposition definitions. Its literal constant and positive-constant questions are distinct. Its natural-order frequency definition uses weak ordering and assumes compared densities exist. Those explicit interpretations are outside the compared results. The manuscript's asymptotic argument is not verified here. The supplied discussion PDF was unavailable.
 
 ## Verification
 
-The project pins Lean 4.35.0-rc3 and Mathlib commit `0db6cb99b412983de54b59ecc1b0b2747542cda3`.
+Lean is pinned to 4.35.0-rc3 and Mathlib to `0db6cb99b412983de54b59ecc1b0b2747542cda3`.
 
 ```sh
 lake exe cache get
-lake --wfail build Erdos415
+lake --wfail build Erdos415 Bounds Certificate FiniteProof Solution Challenge
 ```
 
-See [AUDIT.md](AUDIT.md) for the verification status and statement audit. Compiling definitions checks that they are well-formed; it does not prove the propositions they define.
+Warnings for the two intentional Challenge holes are suppressed locally at those declarations. Implementation modules have no proof holes. See [AUDIT.md](AUDIT.md) for current verification status. The workflow `palomar-preflight.yml` runs Palomar's full pinned reusable mechanical preflight; a passing local build alone is insufficient for intake.
 
-## Palomar status
-
-Not submitted. A nonempty list of proved result declarations, an auditable Challenge, a matching Solution, Comparator configuration, truthful formalization metadata, and passing mechanical preflight are still needed. These files must not be manufactured around unproved definitions to imply that the problem has been solved.
-
-License: Apache-2.0 for this repository's source; cited sources and dependencies retain their own licenses.
+Repository source license: Apache-2.0. Cited sources and dependencies retain their own licenses.
