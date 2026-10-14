@@ -31,7 +31,9 @@ Alexander supplied the original definitions and directs this project as responsi
 
 ## Verification
 
-Lean is pinned to 4.35.0-rc3 and Mathlib to `0db6cb99b412983de54b59ecc1b0b2747542cda3`.
+Lean is pinned to 4.35.0-rc3 and Mathlib to `c55e6e786f49471c72fbddbec5415808896aec1e`.
+This is Mathlib's official `v4.35.0-rc3` snapshot. Its shared dependencies match
+the Verso release used by Palomar's Challenge renderer.
 
 ```sh
 lake exe cache get

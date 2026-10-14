@@ -35,7 +35,13 @@ Checks use proved Mathlib arithmetic facts and `decide +kernel`. Implementation 
 
 ## Verification status
 
-Outcome: **PARTIAL RESULT PROVED**. `lake --wfail build Erdos415 Bounds Certificate FiniteProof Solution Challenge` passed with no warnings (2019 jobs). Both submitted theorems have exactly the standard axiom dependencies `[propext, Classical.choice, Quot.sound]`, as reported by `#print axioms`; neither depends on `sorryAx`. The independent audit agent separately ran the final axiom check and approved the optimized certificate, exact targets and source correspondence. The upstream formalization.yaml v0.4 schema check passes. Full Palomar mechanical preflight and intake are pending.
+Outcome at the original dependency pin: **PARTIAL RESULT PROVED**. `lake --wfail build Erdos415 Bounds Certificate FiniteProof Solution Challenge` passed with no warnings (2019 jobs). Both submitted theorems have exactly the standard axiom dependencies `[propext, Classical.choice, Quot.sound]`, as reported by `#print axioms`; neither depends on `sorryAx`. The independent audit agent separately ran the final axiom check and approved the optimized certificate, exact targets and source correspondence. The upstream formalization.yaml v0.4 schema check passes. [Palomar mechanical verification](https://github.com/PalomarRegistry/PalomarSubmission/actions/runs/37809964625) passed for commit `8b99906af3145a2940e807b9430672e1a3faf93a` with no errors or warnings.
+
+### Render compatibility repair (2026-10-14)
+
+The subsequent [Challenge render](https://github.com/PalomarRegistry/PalomarSubmission/actions/runs/37825066749) failed while merging dependency manifests: `Verso dependency conflicts with submitted package 'plausible'`. Mathlib pinned `b7fb2b866d25bd937a2069931f9733197521cb27`, whereas Verso pinned `fb13df72ecefd8ddbf9291021d7f33a8673eb57b`. These revisions differ only in Plausible's GitHub workflow, but Palomar compares their commit identities.
+
+The project now uses Mathlib's official `v4.35.0-rc3` snapshot, `c55e6e786f49471c72fbddbec5415808896aec1e`, with its complete upstream dependency manifest. This preserves Mathlib's cache compatibility and matches Verso's shared dependency pins. No Lean source or comparator target changed. The unmodified Palomar manifest merger reproduces the original conflict and accepts the new manifest. The preflight workflow also builds all six project modules with `--wfail`. Consult its run for the submitted commit for the build and mechanical verification results; registry rendering and review are separate checks.
 
 ## Production and limitations
 
